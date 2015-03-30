@@ -10,19 +10,19 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 
 public class BaseDao {
-	private static SqlMapClient client;
-	static{
+	private  SqlMapClient client;
+	
+	public SqlMapClient  getClient(){
 		String  resource = "SqlMapConfig.xml";
 		try {
 			Reader reader =  Resources.getResourceAsReader(resource);
-			client = SqlMapClientBuilder.buildSqlMapClient(reader);
+			if(null==client){
+				client = SqlMapClientBuilder.buildSqlMapClient(reader);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public SqlMapClient  getClient(){
 		return client;
 	}
 }
