@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="account">
+	<typeAlias alias="accountDTO" type="com.dto.AccountDTO"/>
+	<typeAlias alias="accountCondition" type="com.dto.AccountCondition"/>
+	 <resultMap id="accountResultMap" class="accountDTO">
+		<result property="accId" column="ACC_ID" jdbcType="int"/>
+		<result property="accFirstName" column="ACC_FIRST_NAME" jdbcType="varchar"/>
+		<result property="accLastName" column="ACC_LAST_NAME" jdbcType="varchar"/>
+		 <result property="accEmail" column="ACC_EMAIL" jdbcType="varchar"/>
+		<result property="accAge" column="ACC_AGE" jdbcType="decimal"/>
+		<result property="accBannerOption" column="ACC_BANNER_OPTION" jdbcType="varchar"/>
+		<result property="accCartOption" column="ACC_CART_OPTION" jdbcType="int"/>
+		<result property="accDateAdded" column="ACC_DATE_ADDED" jdbcType="date"/>
+	 </resultMap> 
+	<sql id="table_columns">
+		ACC_ID,ACC_FIRST_NAME,ACC_LAST_NAME,ACC_EMAIL,ACC_AGE,ACC_BANNER_OPTION,ACC_CART_OPTION,ACC_DATE_ADDED
+	</sql>
+	<insert id="add" parameterClass="accountDTO">
+	insert into account (ACC_FIRST_NAME,ACC_LAST_NAME,ACC_EMAIL,ACC_AGE,ACC_BANNER_OPTION,ACC_CART_OPTION,ACC_DATE_ADDED)  values
+	(#accFirstName#,#accLastName#,#accEmail#,#accAge#,#accBannerOption#,#accCartOption#,now())	
+	<selectKey keyProperty="accId" resultClass="int" >
+		SELECT LAST_INSERT_ID() 
+	</selectKey>  
+	</insert>
+	
+	<select id="findById" parameterClass="int" resultMap="accountResultMap">
+	select <include refid="table_columns"/> from account where acc_id =#accId#
+	</select>
+	
+	<select id="findByMap" parameterClass="map" resultClass="hashMap">
+	select <include refid="table_columns"/> from account where 1=1
+	<dynamic>
+		<isNotEmpty property="accId" prepend="and">
+		ACC_ID = #accId#
+		</isNotEmpty>
+		<isNotEmpty property="accFirstName" prepend="and">
+		ACC_FIRST_NAME like  '%$accFirstName$%' 
+		</isNotEmpty>
+		<isNotEmpty property="ids" prepend=" and">
+			ACC_ID in
+			<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+			</iterate>
+		</isNotEmpty>
+	</dynamic>
+	</select>
+	<select id="findByCondition" parameterClass="accountCondition" resultMap="accountResultMap" >
+	select <include refid="table_columns"/> from account where 1=1
+	<dynamic>
+		<isNotEmpty property="accId" prepend="and">
+		ACC_ID = #accId#
+		</isNotEmpty>
+		<isNotEmpty property="accFirstName" prepend="and">
+		ACC_FIRST_NAME like  '%$accFirstName$%' 
+		</isNotEmpty>
+		<isNotEmpty property="ids" prepend=" and">
+			ACC_ID in
+			<iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+			</iterate>
+		</isNotEmpty>
+	</dynamic>
+	</select>
+</sqlMap>
